@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<settings xmlns="http://maven.apache.org/SETTINGS/1.0.0"
+          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:schemaLocation="http://maven.apache.org/SETTINGS/1.0.0 https://maven.apache.org/xsd/settings-1.0.0.xsd">
+
+    <!--    <proxies>-->
+    <!--      <proxy>-->
+    <!--        <id>corp-proxy</id>-->
+    <!--        <active>true</active>-->
+    <!--        <protocol>http</protocol>-->
+    <!--        <host>proxy.host.net</host>-->
+    <!--        <port>80</port>-->
+    <!--        <username>proxyuser</username>-->
+    <!--        <password>proxypass</password>-->
+    <!--        <nonProxyHosts>localhost|127.0.0.1</nonProxyHosts>-->
+    <!--      </proxy>-->
+    <!--    </proxies>-->
+
+    <servers>
+        <!-- Camunda EE (leave or remove if not using EE artifacts) -->
+        <!--      <server>-->
+        <!--        <id>camunda-bpm-nexus-ee</id>-->
+        <!--        <username>camunda enterprise user</username>-->
+        <!--        <password>camunda enterprise password</password>-->
+        <!--      </server>-->
+    </servers>
+
+    <mirrors>
+        <!-- Direct access to Central (no external mirror) -->
+        <mirror>
+            <id>central-direct</id>
+            <name>Maven Central direct</name>
+            <url>https://repo.maven.apache.org/maven2/</url>
+            <mirrorOf>central</mirrorOf>
+        </mirror>
+    </mirrors>
+
+    <profiles>
+        <profile>
+            <id>jdk-21-global</id>
+            <properties>
+                <maven.compiler.release>21</maven.compiler.release>
+                <maven.compiler.source>21</maven.compiler.source>
+                <maven.compiler.target>21</maven.compiler.target>
+            </properties>
+            <repositories>
+                <repository>
+                    <id>central</id>
+                    <url>https://repo.maven.apache.org/maven2/</url>
+                    <releases><enabled>true</enabled></releases>
+                    <snapshots><enabled>false</enabled></snapshots>
+                </repository>
+                <repository>
+                    <id>camunda-bpm-nexus</id>
+                    <url>https://artifacts.camunda.com/artifactory/public/</url>
+                    <releases><enabled>true</enabled></releases>
+                    <snapshots><enabled>false</enabled></snapshots>
+                </repository>
+                <!-- Uncomment for EE (requires above server credentials)
+                <repository>
+                  <id>camunda-bpm-nexus-ee</id>
+                  <url>https://artifacts.camunda.com/artifactory/enterprise/</url>
+                  <releases><enabled>true</enabled></releases>
+                  <snapshots><enabled>false</enabled></snapshots>
+                </repository>
+                -->
+            </repositories>
+            <pluginRepositories>
+                <pluginRepository>
+                    <id>central-plugins</id>
+                    <url>https://repo.maven.apache.org/maven2/</url>
+                    <releases><enabled>true</enabled></releases>
+                    <snapshots><enabled>false</enabled></snapshots>
+                </pluginRepository>
+            </pluginRepositories>
+        </profile>
+    </profiles>
+
+    <activeProfiles>
+        <activeProfile>jdk-21-global</activeProfile>
+    </activeProfiles>
+
+</settings>

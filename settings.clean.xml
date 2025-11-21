@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<settings xmlns="http://maven.apache.org/SETTINGS/1.2.0"
+          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:schemaLocation="http://maven.apache.org/SETTINGS/1.2.0 https://maven.apache.org/xsd/settings-1.2.0.xsd">
+    <!-- Custom project-local settings: no external mirrors, only Central + Camunda -->
+
+    <!-- Optional: isolate local repo inside project (comment out if you prefer global cache) -->
+    <localRepository>${user.dir}/.m2/repository</localRepository>
+
+    <interactiveMode>false</interactiveMode>
+
+    <pluginGroups>
+        <pluginGroup>org.springframework.boot</pluginGroup>
+    </pluginGroups>
+
+    <profiles>
+        <profile>
+            <id>project-repos</id>
+            <repositories>
+                <repository>
+                    <id>central</id>
+                    <url>https://repo.maven.apache.org/maven2</url>
+                    <releases><enabled>true</enabled><updatePolicy>daily</updatePolicy></releases>
+                    <snapshots><enabled>false</enabled></snapshots>
+                </repository>
+                <repository>
+                    <id>camunda-bpm-nexus</id>
+                    <url>https://artifacts.camunda.com/artifactory/public/</url>
+                    <releases><enabled>true</enabled><updatePolicy>daily</updatePolicy></releases>
+                    <snapshots><enabled>false</enabled></snapshots>
+                </repository>
+            </repositories>
+            <pluginRepositories>
+                <pluginRepository>
+                    <id>central</id>
+                    <url>https://repo.maven.apache.org/maven2</url>
+                    <releases><enabled>true</enabled></releases>
+                    <snapshots><enabled>false</enabled></snapshots>
+                </pluginRepository>
+                <pluginRepository>
+                    <id>camunda-bpm-nexus</id>
+                    <url>https://artifacts.camunda.com/artifactory/public/</url>
+                    <releases><enabled>true</enabled></releases>
+                    <snapshots><enabled>false</enabled></snapshots>
+                </pluginRepository>
+            </pluginRepositories>
+        </profile>
+    </profiles>
+
+    <activeProfiles>
+        <activeProfile>project-repos</activeProfile>
+    </activeProfiles>
+</settings>

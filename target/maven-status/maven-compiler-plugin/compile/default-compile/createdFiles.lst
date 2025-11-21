@@ -1,0 +1,10 @@
+com\onlineshop\task\OnlineShopApplication.class
+com\onlineshop\task\PlaceOrderDelegate.class
+com\onlineshop\task\CheckProductDelegate.class
+com\onlineshop\task\OrderRepository.class
+com\onlineshop\task\OrderResource.class
+com\onlineshop\task\InventoryWorker.class
+com\onlineshop\task\NotifySuccessDelegate.class
+com\onlineshop\task\InventoryRepository.class
+com\onlineshop\task\CamundaService.class
+com\onlineshop\task\Order.class

@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:camunda="http://camunda.org/schema/1.0/bpmn" xmlns:ns3="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:ns4="http://www.omg.org/spec/DD/20100524/DC" xmlns:ns5="http://www.omg.org/spec/DD/20100524/DI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" id="Definitions_shop" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="5.36.0">
+  <bpmn:error id="Error_InvalidProduct" name="InvalidProductError" errorCode="INVALID_PRODUCT" />
+  <bpmn:collaboration id="Collaboration_shop">
+    <bpmn:participant id="Participant_shop" name="Process for placing an order" processRef="shopProcess" />
+  </bpmn:collaboration>
+  <bpmn:process id="shopProcess" name="Shop Process" isExecutable="true" camunda:historyTimeToLive="30">
+    <bpmn:startEvent id="StartEvent_shop">
+      <bpmn:outgoing>Flow_start_checkProduct</bpmn:outgoing>
+    </bpmn:startEvent>
+    <bpmn:serviceTask id="ServiceTask_checkProduct" name="Check product quality" camunda:asyncBefore="true" camunda:jobPriority="100" camunda:class="com.onlineshop.task.CheckProductDelegate">
+      <bpmn:incoming>Flow_start_checkProduct</bpmn:incoming>
+      <bpmn:outgoing>Flow_checkProduct_to_decision</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:exclusiveGateway id="Gateway_inventoryDecision" name="Inventory reserved?">
+      <bpmn:incoming>Flow_checkProduct_to_decision</bpmn:incoming>
+      <bpmn:outgoing>Flow_decision_to_placeOrder</bpmn:outgoing>
+      <bpmn:outgoing>Flow_decision_to_notifyFailure</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:serviceTask id="ServiceTask_placeOrder" name="Place an Order" camunda:asyncBefore="true" camunda:jobPriority="100" camunda:class="com.onlineshop.task.PlaceOrderDelegate">
+      <bpmn:incoming>Flow_decision_to_placeOrder</bpmn:incoming>
+      <bpmn:outgoing>Flow_placeOrder_to_notifySuccess</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:userTask id="UserTask_notifyFailure" name="Notify user that order is not successfully placed">
+      <bpmn:incoming>Flow_decision_to_notifyFailure</bpmn:incoming>
+      <bpmn:outgoing>Flow_notifyFailure_to_endFailure</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:serviceTask id="ServiceTask_notifySuccess" name="Notify user that order has been successfully placed" camunda:asyncBefore="true" camunda:jobPriority="50" camunda:class="com.onlineshop.task.NotifyUserDelegate">
+      <bpmn:incoming>Flow_placeOrder_to_notifySuccess</bpmn:incoming>
+      <bpmn:outgoing>Flow_notifySuccess_to_endSuccess</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:endEvent id="EndEvent_invalidProduct">
+      <bpmn:incoming>Flow_boundary_to_invalid</bpmn:incoming>
+      <bpmn:errorEventDefinition errorRef="Error_InvalidProduct" />
+    </bpmn:endEvent>
+    <bpmn:endEvent id="EndEvent_success">
+      <bpmn:incoming>Flow_notifySuccess_to_endSuccess</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:endEvent id="EndEvent_failure">
+      <bpmn:incoming>Flow_notifyFailure_to_endFailure</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:boundaryEvent id="BoundaryEvent_invalidProduct" attachedToRef="ServiceTask_checkProduct">
+      <bpmn:outgoing>Flow_boundary_to_invalid</bpmn:outgoing>
+      <bpmn:errorEventDefinition errorRef="Error_InvalidProduct" />
+    </bpmn:boundaryEvent>
+    <bpmn:sequenceFlow id="Flow_start_checkProduct" sourceRef="StartEvent_shop" targetRef="ServiceTask_checkProduct" />
+    <bpmn:sequenceFlow id="Flow_checkProduct_to_decision" sourceRef="ServiceTask_checkProduct" targetRef="Gateway_inventoryDecision" />
+    <bpmn:sequenceFlow id="Flow_decision_to_placeOrder" sourceRef="Gateway_inventoryDecision" targetRef="ServiceTask_placeOrder">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">\${inventoryReserved == true}</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="Flow_decision_to_notifyFailure" sourceRef="Gateway_inventoryDecision" targetRef="UserTask_notifyFailure">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">\${inventoryReserved == false}</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="Flow_placeOrder_to_notifySuccess" sourceRef="ServiceTask_placeOrder" targetRef="ServiceTask_notifySuccess" />
+    <bpmn:sequenceFlow id="Flow_notifyFailure_to_endFailure" sourceRef="UserTask_notifyFailure" targetRef="EndEvent_failure" />
+    <bpmn:sequenceFlow id="Flow_notifySuccess_to_endSuccess" sourceRef="ServiceTask_notifySuccess" targetRef="EndEvent_success" />
+    <bpmn:sequenceFlow id="Flow_boundary_to_invalid" sourceRef="BoundaryEvent_invalidProduct" targetRef="EndEvent_invalidProduct" />
+  </bpmn:process>
+  <ns3:BPMNDiagram id="BPMNDiagram_shop">
+    <ns3:BPMNPlane id="BPMNPlane_shop" bpmnElement="Collaboration_shop">
+      <ns3:BPMNShape id="Participant_shop_di" bpmnElement="Participant_shop" isHorizontal="true">
+        <ns4:Bounds x="160" y="80" width="910" height="490" />
+        <ns3:BPMNLabel />
+      </ns3:BPMNShape>
+      <ns3:BPMNShape id="StartEvent_shop_di" bpmnElement="StartEvent_shop">
+        <ns4:Bounds x="212" y="352" width="36" height="36" />
+      </ns3:BPMNShape>
+      <ns3:BPMNShape id="ServiceTask_checkProduct_di" bpmnElement="ServiceTask_checkProduct">
+        <ns4:Bounds x="310" y="330" width="100" height="80" />
+        <ns3:BPMNLabel />
+      </ns3:BPMNShape>
+      <ns3:BPMNShape id="Gateway_inventoryDecision_di" bpmnElement="Gateway_inventoryDecision" isMarkerVisible="true">
+        <ns4:Bounds x="445" y="345" width="50" height="50" />
+      </ns3:BPMNShape>
+      <ns3:BPMNShape id="ServiceTask_placeOrder_di" bpmnElement="ServiceTask_placeOrder">
+        <ns4:Bounds x="550" y="250" width="100" height="80" />
+        <ns3:BPMNLabel />
+      </ns3:BPMNShape>
+      <ns3:BPMNShape id="UserTask_notifyFailure_di" bpmnElement="UserTask_notifyFailure">
+        <ns4:Bounds x="550" y="440" width="100" height="80" />
+        <ns3:BPMNLabel />
+      </ns3:BPMNShape>
+      <ns3:BPMNShape id="ServiceTask_notifySuccess_di" bpmnElement="ServiceTask_notifySuccess">
+        <ns4:Bounds x="720" y="250" width="100" height="80" />
+        <ns3:BPMNLabel />
+      </ns3:BPMNShape>
+      <ns3:BPMNShape id="EndEvent_invalidProduct_di" bpmnElement="EndEvent_invalidProduct">
+        <ns4:Bounds x="342" y="202" width="36" height="36" />
+      </ns3:BPMNShape>
+      <ns3:BPMNShape id="EndEvent_success_di" bpmnElement="EndEvent_success">
+        <ns4:Bounds x="872" y="272" width="36" height="36" />
+      </ns3:BPMNShape>
+      <ns3:BPMNShape id="EndEvent_failure_di" bpmnElement="EndEvent_failure">
+        <ns4:Bounds x="862" y="462" width="36" height="36" />
+      </ns3:BPMNShape>
+      <ns3:BPMNShape id="BoundaryEvent_invalidProduct_di" bpmnElement="BoundaryEvent_invalidProduct">
+        <ns4:Bounds x="342" y="312" width="36" height="36" />
+      </ns3:BPMNShape>
+      <ns3:BPMNEdge id="Flow_start_checkProduct_di" bpmnElement="Flow_start_checkProduct">
+        <ns5:waypoint x="248" y="370" />
+        <ns5:waypoint x="310" y="370" />
+      </ns3:BPMNEdge>
+      <ns3:BPMNEdge id="Flow_checkProduct_to_decision_di" bpmnElement="Flow_checkProduct_to_decision">
+        <ns5:waypoint x="410" y="370" />
+        <ns5:waypoint x="445" y="370" />
+      </ns3:BPMNEdge>
+      <ns3:BPMNEdge id="Flow_decision_to_placeOrder_di" bpmnElement="Flow_decision_to_placeOrder">
+        <ns5:waypoint x="470" y="345" />
+        <ns5:waypoint x="470" y="290" />
+        <ns5:waypoint x="550" y="290" />
+      </ns3:BPMNEdge>
+      <ns3:BPMNEdge id="Flow_decision_to_notifyFailure_di" bpmnElement="Flow_decision_to_notifyFailure">
+        <ns5:waypoint x="470" y="395" />
+        <ns5:waypoint x="470" y="480" />
+        <ns5:waypoint x="550" y="480" />
+      </ns3:BPMNEdge>
+      <ns3:BPMNEdge id="Flow_placeOrder_to_notifySuccess_di" bpmnElement="Flow_placeOrder_to_notifySuccess">
+        <ns5:waypoint x="650" y="290" />
+        <ns5:waypoint x="720" y="290" />
+      </ns3:BPMNEdge>
+      <ns3:BPMNEdge id="Flow_notifyFailure_to_endFailure_di" bpmnElement="Flow_notifyFailure_to_endFailure">
+        <ns5:waypoint x="650" y="480" />
+        <ns5:waypoint x="862" y="480" />
+      </ns3:BPMNEdge>
+      <ns3:BPMNEdge id="Flow_notifySuccess_to_endSuccess_di" bpmnElement="Flow_notifySuccess_to_endSuccess">
+        <ns5:waypoint x="820" y="290" />
+        <ns5:waypoint x="872" y="290" />
+      </ns3:BPMNEdge>
+      <ns3:BPMNEdge id="Flow_boundary_to_invalid_di" bpmnElement="Flow_boundary_to_invalid">
+        <ns5:waypoint x="360" y="312" />
+        <ns5:waypoint x="360" y="238" />
+      </ns3:BPMNEdge>
+    </ns3:BPMNPlane>
+  </ns3:BPMNDiagram>
+</bpmn:definitions>
