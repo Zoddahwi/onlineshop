@@ -8,7 +8,7 @@
     <bpmn:startEvent id="StartEvent_shop">
       <bpmn:outgoing>Flow_start_checkProduct</bpmn:outgoing>
     </bpmn:startEvent>
-    <bpmn:serviceTask id="ServiceTask_checkProduct" name="Check product quality" camunda:asyncBefore="true" camunda:jobPriority="100" camunda:class="com.onlineshop.task.CheckProductDelegate">
+    <bpmn:serviceTask id="ServiceTask_checkProduct" name="Check Product" camunda:asyncBefore="true" camunda:delegateExpression="#{checkProductDelegate}">
       <bpmn:incoming>Flow_start_checkProduct</bpmn:incoming>
       <bpmn:outgoing>Flow_checkProduct_to_decision</bpmn:outgoing>
     </bpmn:serviceTask>
@@ -17,7 +17,7 @@
       <bpmn:outgoing>Flow_decision_to_placeOrder</bpmn:outgoing>
       <bpmn:outgoing>Flow_decision_to_notifyFailure</bpmn:outgoing>
     </bpmn:exclusiveGateway>
-    <bpmn:serviceTask id="ServiceTask_placeOrder" name="Place an Order" camunda:asyncBefore="true" camunda:jobPriority="100" camunda:class="com.onlineshop.task.PlaceOrderDelegate">
+    <bpmn:serviceTask id="ServiceTask_placeOrder" name="Place an Order" camunda:asyncBefore="true" camunda:jobPriority="100" camunda:delegateExpression="#{placeOrderDelegate}">
       <bpmn:incoming>Flow_decision_to_placeOrder</bpmn:incoming>
       <bpmn:outgoing>Flow_placeOrder_to_notifySuccess</bpmn:outgoing>
     </bpmn:serviceTask>
@@ -25,7 +25,7 @@
       <bpmn:incoming>Flow_decision_to_notifyFailure</bpmn:incoming>
       <bpmn:outgoing>Flow_notifyFailure_to_endFailure</bpmn:outgoing>
     </bpmn:userTask>
-    <bpmn:serviceTask id="ServiceTask_notifySuccess" name="Notify user that order has been successfully placed" camunda:asyncBefore="true" camunda:jobPriority="50" camunda:class="com.onlineshop.task.NotifyUserDelegate">
+    <bpmn:serviceTask id="ServiceTask_notifySuccess" name="Notify user that order has been successfully placed" camunda:asyncBefore="true" camunda:jobPriority="50" camunda:delegateExpression="#{notifySuccessDelegate}">
       <bpmn:incoming>Flow_placeOrder_to_notifySuccess</bpmn:incoming>
       <bpmn:outgoing>Flow_notifySuccess_to_endSuccess</bpmn:outgoing>
     </bpmn:serviceTask>
@@ -46,10 +46,10 @@
     <bpmn:sequenceFlow id="Flow_start_checkProduct" sourceRef="StartEvent_shop" targetRef="ServiceTask_checkProduct" />
     <bpmn:sequenceFlow id="Flow_checkProduct_to_decision" sourceRef="ServiceTask_checkProduct" targetRef="Gateway_inventoryDecision" />
     <bpmn:sequenceFlow id="Flow_decision_to_placeOrder" sourceRef="Gateway_inventoryDecision" targetRef="ServiceTask_placeOrder">
-      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">\${inventoryReserved == true}</bpmn:conditionExpression>
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${inventoryReserved == true}</bpmn:conditionExpression>
     </bpmn:sequenceFlow>
     <bpmn:sequenceFlow id="Flow_decision_to_notifyFailure" sourceRef="Gateway_inventoryDecision" targetRef="UserTask_notifyFailure">
-      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">\${inventoryReserved == false}</bpmn:conditionExpression>
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${inventoryReserved == false}</bpmn:conditionExpression>
     </bpmn:sequenceFlow>
     <bpmn:sequenceFlow id="Flow_placeOrder_to_notifySuccess" sourceRef="ServiceTask_placeOrder" targetRef="ServiceTask_notifySuccess" />
     <bpmn:sequenceFlow id="Flow_notifyFailure_to_endFailure" sourceRef="UserTask_notifyFailure" targetRef="EndEvent_failure" />

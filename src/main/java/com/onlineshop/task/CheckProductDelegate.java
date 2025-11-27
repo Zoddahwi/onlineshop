@@ -10,9 +10,10 @@ import org.camunda.bpm.engine.delegate.JavaDelegate;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-@Named("checkProductDelegate")
 @ApplicationScoped
+@Named("checkProductDelegate")
 public class CheckProductDelegate implements JavaDelegate {
+
     private static final Logger LOG = Logger.getLogger(CheckProductDelegate.class.getName());
 
     @Inject
@@ -34,7 +35,7 @@ public class CheckProductDelegate implements JavaDelegate {
             }
         } catch (Exception e) {
             LOG.log(Level.WARNING, "Invalid quantity variable: {0}", qVar);
-            throw new BpmnError("INVALID_PRODUCT"); // treat invalid input as BPMN error to trigger boundary
+            throw new BpmnError("INVALID_PRODUCT");
         }
 
         if (productId == null || productId.isBlank() || !inventoryRepository.isValidProduct(productId)) {
@@ -54,6 +55,6 @@ public class CheckProductDelegate implements JavaDelegate {
             execution.setVariable("reservedQuantity", quantity);
         }
 
-        LOG.log(Level.INFO, "CheckProductDelegate: product={0}, qty={1}, reserved={2}", new Object[]{productId, quantity, reserved});
+        LOG.info("CheckProductDelegate executed: product=" + productId + ", qty=" + quantity + ", reserved=" + reserved);
     }
 }

@@ -1,0 +1,8 @@
+<component name="ArtifactManager">
+  <artifact name="unnamed">
+    <output-path>$PROJECT_DIR$</output-path>
+    <root id="root">
+      <element id="library" level="project" name="Maven: org.wildfly.common:wildfly-common:1.5.4.Final-format-001" />
+    </root>
+  </artifact>
+</component>

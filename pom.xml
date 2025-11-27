@@ -2,7 +2,7 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
-                                                                     http://maven.apache.org/xsd/maven-4.0.0.xsd">
+                                     http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.example</groupId>
@@ -37,6 +37,7 @@
         </dependencies>
     </dependencyManagement>
 
+
     <dependencies>
         <!-- Quarkus runtime & extensions -->
         <dependency>
@@ -49,15 +50,14 @@
             <artifactId>quarkus-rest-client-reactive</artifactId>
         </dependency>
 
-        <!-- Camunda CDI integration for Java delegates with Jakarta CDI -->
         <dependency>
-            <groupId>org.camunda.bpm</groupId>
-            <artifactId>camunda-engine-cdi</artifactId>
+            <groupId>io.quarkus</groupId>
+            <artifactId>quarkus-resteasy-reactive-jackson</artifactId>
         </dependency>
 
         <dependency>
             <groupId>io.quarkus</groupId>
-            <artifactId>quarkus-resteasy-reactive-jackson</artifactId>
+            <artifactId>quarkus-arc</artifactId>
         </dependency>
 
         <!-- External Task Client (Camunda) -->
@@ -66,14 +66,27 @@
             <artifactId>camunda-external-task-client</artifactId>
         </dependency>
 
-        <!-- Camunda engine API (compile) -->
         <dependency>
             <groupId>org.camunda.bpm</groupId>
             <artifactId>camunda-engine</artifactId>
-            <scope>provided</scope>
+            <version>${camunda.version}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.springframework</groupId>
+                    <artifactId>spring-beans</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.springframework</groupId>
+                    <artifactId>spring-core</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.springframework</groupId>
+                    <artifactId>spring-jcl</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
 
-        <!-- Jakarta annotations -->
+        <!-- Jakarta / Servlet APIs -->
         <dependency>
             <groupId>jakarta.annotation</groupId>
             <artifactId>jakarta.annotation-api</artifactId>
@@ -82,8 +95,10 @@
         </dependency>
 
         <dependency>
-            <groupId>io.quarkus</groupId>
-            <artifactId>quarkus-arc</artifactId>
+            <groupId>javax.servlet</groupId>
+            <artifactId>javax.servlet-api</artifactId>
+            <version>3.1.0</version>
+            <scope>provided</scope>
         </dependency>
 
         <!-- Testing -->
@@ -94,14 +109,12 @@
             <scope>test</scope>
         </dependency>
 
-        <!-- Quarkus Mockito support for @InjectMock in @QuarkusTest -->
         <dependency>
             <groupId>io.quarkus</groupId>
             <artifactId>quarkus-junit5-mockito</artifactId>
             <scope>test</scope>
         </dependency>
 
-        <!-- Optional: explicit Mockito (test) -->
         <dependency>
             <groupId>org.mockito</groupId>
             <artifactId>mockito-core</artifactId>
